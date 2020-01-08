@@ -7,4 +7,4 @@
 当触发一个节点的事件时，会从DOM根节点开始，依次触发其祖先节点的同类型事件，直到当前节点自身
 #### DOM事件流
 DOM同时支持两种事件模型，但捕获性事件先开始，从document开始也结束于document，DOM模型的独特之处在于文本也可以触发事件
-<font color=blue>**当使用addEventListener绑定事件时，第三个参数设为true时表示未事件捕获，除此之外的所有事件均为事件冒泡**</font>
+**<font color=blue>当使用addEventListener绑定事件时，第三个参数设为true时表示未事件捕获，除此之外的所有事件均为事件冒泡</font>**
