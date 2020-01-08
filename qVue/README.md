@@ -40,7 +40,7 @@ new Vue({
     render: h => h(app)
 }).$mount('#app');
 ```
-## 说说对vue路由钩子函数的了解
+## 说说对vue路由钩子函数的了解(Vue2.2)
 vue-router提供的导航钩子主要用来拦截导航，让它完成跳转或取消
 路由钩子主要有三种实现方式：
 ### 全局实现
@@ -97,7 +97,6 @@ beforeRouterLeave(to, from, next) {
     window.clearInterval(this.timer)
     next()
 }
-before
 ```
 + 当页面中有未关闭的窗口或未保存的内容时，阻止页面跳转
 + 保存相关内容到vuex中或session中
@@ -109,6 +108,7 @@ beforeRouterLeave(to, from, next) {
 }
 ```
 ## vue2.0的生命周期(组件钩子函数)
+vue的生命周期就是vue实例从创建到销毁的过程。其作用就是：通过把握具体的生命周期，让开发者在控制vue实例的创建过程中形成更好的逻辑。
 ### beforeCreate
 实例初始化之后
 ### created
@@ -123,3 +123,98 @@ beforeRouterLeave(to, from, next) {
 实例销毁之前调用。在这一步，实例仍然完全可用，this仍能获取到实例。
 ### destroyed
 Vue实例销毁后调用。调用后，vue实例指示的东西都会解除绑定，所有的事件监听器都会被移除，所有的子实例也会被销毁。
+**vue2.0之后又添加了3个周期**
+### actived
+激活
+### deactivated
+未激活
+### errorCaptured
+当捕获一个来自子孙组件的错误时被调用
+## 谈谈对vue组件化的理解
+组件是可复用的vue实例，如果网页中的某一个部分需要在多个场景中使用，那么我们可以将其抽出来形成一个组件进行复用。大大提高了代码的复用率。
+## v-model是什么
+v-model用于表单数据的双向绑定，其实它是一个语法糖，背后做了两个操作：
++ v-bind绑定了一个value属性
++ v-on指令给当前元素绑定input事件
+## 谈谈对动态路由的理解
+**动态路由，即能够提供参数的路由**
+在实际应用中，常常需要把某种模式匹配到的所有路由，映射到同一个组件，比如商品详情页面，页面结构都一样，只是商品的ID不同，此时使用动态路由就很合适。
+动态路由的创建，主要是在使用path属性过程中，使用动态路径参数(以冒号开头)，如：
+```
+import User from './User'
+{
+    path: '/user/:id',
+    name:'user'
+    component:User
+}
+```
+通过this.$route.params获取动态路由的参数；
+## 你是如何理解Vue的响应式系统的
++ 任何一个vue组件都有一个与之对应的watcher实例
++ vue的data对象的属性会被添加setter和getter属性
++ 当vue组件的render函数被执行时，会触发vue实例的data对象，即调用data对象属性的getter方法，此时vue会记录该组件所依赖的所有data
++ 当data被修改时，setter方法被调用，此时vue会通知所有依赖于该data的组件去调用render函数重新渲染页面。
+## 谈谈ES6 Proxy和Object.defineProperty的优劣
+### proxy的优势
++ proxy可以直接监听对象而非属性
++ proxy可以直接监听数组的变化
++ proxy有多重拦截方法，这是Object.defineProperty不具备的
++ proxy返回的是一个新对象，我们可以只操作新的对象达到目的，而Obhect.defineProperty只能遍历对象属性进行修改
++ proxy作为新的标准将会受到浏览器厂商重点持续的性能优化
+### Object.defineProperty优势
++ 兼容性好，支持IE9
+## computed和watch的区别
+#### computed
++ computed是计算属性，它更多用于计算值的场景
++ computed具有缓存性，其值在getter执行后会缓存，只有在它依赖的属性值改变后，下一次获取computed的值时才会重新调用对应的getter来计算
++ computed适用于比较消耗性能的计算场景
+#### watch
++ 更多的是**观察**作用，当数据变化时来执行回调进行后续的操作
++ 无缓存性，页面重新渲染时即使值没有变化也会执行
+## 说说vuejs中的修饰符
+修饰符是由点开头的指令后缀来表示的
+#### 事件修饰符
++ .stop。阻止单击事件继续传播
++ .prevent。阻止默认事件
++ .capture。 添加事件监听器时使用事件捕获模式
+```
+<!-- 即内部元素触发的事件先在此处理，然后才交由内部元素进行处理 -->
+<div v-on:click.capture="doThis">...</div>
+```
++ .self。只在当event.target是当前元素自身时触发处理函数
++ .once。点击事件将只会触发一次
++ .passive。
+#### 按键修饰符
+可以将[KeyboardEvent.key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key/Key_Values)暴露的任意有效按键名转换为kebab-case(以短-连接)来作为修饰符
+```
+<!-- 处理函数只会在$event.key等于PageDown时被调用 -->
+<input v-on:keyup.page-down="onPageDown">
+```
+**按键码keyCode的事件用法已经被废弃了并可能不会被最新的浏览器支持**，但是使用keyCode特性也是允许的。
+```
+<input v-on:keyup.13="submit">
+```
+为了在必要的情况下支持旧浏览器，Vue提供了绝大多数常用的按键码的别名：
+```
+.enter、.tab、.delete、.esc、.space、.up、.down、.left、.right
+```
+#### 系统修饰符
+实现在仅在按下相应按键时才触发鼠标或键盘事件的监听器
+```
+.ctrl、.alt、.shift、.meta
+```
+**.exact**修饰符允许精确控制按键
+```
+<!-- 即使 Alt 或 Shift 被一同按下时也会触发 -->
+<button @click.ctrl="onClick">A</button>
+
+<!-- 有且只有 Ctrl 被按下的时候才触发 -->
+<button @click.ctrl.exact="onCtrlClick">A</button>
+
+<!-- 没有任何系统修饰符被按下的时候才触发 -->
+<button @click.exact="onClick">A</button>
+```
+**鼠标按钮修饰符**
+```
+.left、.right、.middle
+```
