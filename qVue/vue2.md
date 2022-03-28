@@ -218,3 +218,9 @@ import User from './User'
 ```
 .left、.right、.middle
 ```
+
+### vue-router源码分析(v3.5.3)
+vue中每个插件内部都有一个install方法,该方法供Vue.use(plugin)时调用,方法参数默认会传入Vue对象
++ 定义了一个VueRouter类,该类中有install方法
++ install方法中,使用mixin混入一个beforeCreate钩子,该钩子函数内会根据根组件或子组件向vue实例上绑定router对象_routerRoot
++ install方法内还会将$router和$route绑定到Vue.prototype上,实现响应化

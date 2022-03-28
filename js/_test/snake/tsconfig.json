@@ -1,0 +1,8 @@
+{
+    "outDir":"dist/ts",
+    "compilerOptions": {
+        "module":"ES2015",
+        "target": "ES2015",
+        "strict": true
+    }
+}
